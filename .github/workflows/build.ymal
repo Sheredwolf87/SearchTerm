@@ -1,0 +1,57 @@
+name: Script Compiler
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }} (${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            arch: arm64
+            output_name: macOS_AppleSilicon
+            
+          - os: windows-latest
+            arch: x64
+            output_name: Windows_x86
+
+          - os: windows-latest
+            arch: ARM64
+            output_name: Windows_ARM64
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        architecture: ${{ matrix.arch }}
+
+    - name: Install PyInstaller and Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+
+    - name: Build for Mac
+      if: matrix.os == 'macos-latest'
+      run: pyinstaller --onefile --name=${{ matrix.output_name }} main.py
+
+    - name: Build for Windows x86
+      if: matrix.os == 'windows-latest' && matrix.arch == 'x64'
+      run: pyinstaller --onefile --name=${{ matrix.output_name }} main.py
+
+    - name: Build for Windows ARM64
+      if: matrix.os == 'windows-latest' && matrix.arch == 'ARM64'
+      run: pyinstaller --onefile --target-arch=arm64 --name=${{ matrix.output_name }} main.py
+
+    - name: Upload Finished Binaries
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.output_name }}
+        path: dist/
+
