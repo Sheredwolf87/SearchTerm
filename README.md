@@ -2,6 +2,7 @@
 A way to open any search engine with your terminal
 
 Features:
+
 • Customizable Search engine options 
 
 • Custom space formatting characters eg (%20, +, etc)
