@@ -31,7 +31,7 @@ jobs:
             python_arch: x64
             output_name: Windows_x86
 
-          - os: windows-latest
+          - os: windows-11-arm
             arch: ARM64
             python_arch: x64
             output_name: Windows_ARM64
@@ -64,11 +64,12 @@ jobs:
       run: pyinstaller --onefile --name=${{ matrix.output_name }} main.py
 
     - name: Build for Windows ARM64
-      if: matrix.os == 'windows-latest' && matrix.arch == 'ARM64'
-      run: pyinstaller --onefile --target-arch=arm64 --name=${{ matrix.output_name }} main.py
+      if: matrix.os == 'windows-11-arm' && matrix.arch == 'ARM64'
+      run: pyinstaller --onefile --name=${{ matrix.output_name }} main.py
 
     - name: Upload Finished Binaries
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.output_name }}
         path: dist/
+
